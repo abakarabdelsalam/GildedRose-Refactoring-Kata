@@ -25,55 +25,75 @@ class GildedRose {
     }
 
     public void updateQuality() {
-        for (int i = 0; i < items.length; i++) {
-            if (!items[i].name.equals(AGED_BRIE)
-                    && !items[i].name.equals(BACKSTAGE_PASS)) {
-                if (items[i].quality > MIN_QUALITY) {
-                    if (!items[i].name.equals(SULFURAS)) {
-                        items[i].quality = items[i].quality - 1;
-                    }
-                }
-            } else {
-                if (items[i].quality < MAX_QUALITY) {
-                    items[i].quality = items[i].quality + 1;
-
-                    if (items[i].name.equals(BACKSTAGE_PASS)) {
-                        if (items[i].sellIn <= BACKSTAGE_DOUBLE_GAIN_SELL_IN) {
-                            if (items[i].quality < MAX_QUALITY) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-
-                        if (items[i].sellIn <= BACKSTAGE_TRIPLE_GAIN_SELL_IN) {
-                            if (items[i].quality < MAX_QUALITY) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!items[i].name.equals(SULFURAS)) {
-                items[i].sellIn = items[i].sellIn - 1;
-            }
-
-            if (items[i].sellIn < 0) {
-                if (!items[i].name.equals(AGED_BRIE)) {
-                    if (!items[i].name.equals(BACKSTAGE_PASS)) {
-                        if (items[i].quality > MIN_QUALITY) {
-                            if (!items[i].name.equals(SULFURAS)) {
-                                items[i].quality = items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        items[i].quality = MIN_QUALITY;
-                    }
-                } else {
-                    if (items[i].quality < MAX_QUALITY) {
-                        items[i].quality = items[i].quality + 1;
-                    }
-                }
-            }
+        for (Item item : items) {
+            updateItem(item);
         }
+    }
+
+    private static void updateItem(Item item) {
+        if (isLegendary(item)) {
+            return;
+        }
+        applyDailyQualityChange(item);
+        item.sellIn--;
+        // Le décrément précède le test de péremption : un article dont il reste 0 jour
+        // subit donc déjà le traitement des articles périmés le jour même.
+        if (isExpired(item)) {
+            applyExpiredQualityChange(item);
+        }
+    }
+
+    private static void applyDailyQualityChange(Item item) {
+        if (isAgedBrie(item)) {
+            increaseQuality(item);
+        } else if (isBackstagePass(item)) {
+            increaseQuality(item);
+            if (item.sellIn <= BACKSTAGE_DOUBLE_GAIN_SELL_IN) {
+                increaseQuality(item);
+            }
+            if (item.sellIn <= BACKSTAGE_TRIPLE_GAIN_SELL_IN) {
+                increaseQuality(item);
+            }
+        } else {
+            decreaseQuality(item);
+        }
+    }
+
+    private static void applyExpiredQualityChange(Item item) {
+        if (isAgedBrie(item)) {
+            increaseQuality(item);
+        } else if (isBackstagePass(item)) {
+            item.quality = MIN_QUALITY;
+        } else {
+            decreaseQuality(item);
+        }
+    }
+
+    private static void increaseQuality(Item item) {
+        if (item.quality < MAX_QUALITY) {
+            item.quality++;
+        }
+    }
+
+    private static void decreaseQuality(Item item) {
+        if (item.quality > MIN_QUALITY) {
+            item.quality--;
+        }
+    }
+
+    private static boolean isLegendary(Item item) {
+        return SULFURAS.equals(item.name);
+    }
+
+    private static boolean isAgedBrie(Item item) {
+        return AGED_BRIE.equals(item.name);
+    }
+
+    private static boolean isBackstagePass(Item item) {
+        return BACKSTAGE_PASS.equals(item.name);
+    }
+
+    private static boolean isExpired(Item item) {
+        return item.sellIn < 0;
     }
 }
