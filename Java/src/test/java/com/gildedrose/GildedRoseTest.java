@@ -27,6 +27,8 @@ class GildedRoseTest {
 
     private static final String CONJURED_ITEM = "Conjured Mana Cake";
 
+    private static final String ANOTHER_CONJURED_ITEM = "Conjured Sword of Doom";
+
     @Nested
     @DisplayName("Article ordinaire")
     class NormalItem {
@@ -180,19 +182,49 @@ class GildedRoseTest {
     }
 
     @Nested
-    @DisplayName("Article invoqué (fonctionnalité non encore implémentée)")
+    @DisplayName("Article invoqué (Conjured)")
     class ConjuredItem {
 
         @Test
-        @DisplayName("se comporte aujourd'hui comme un article ordinaire : -1 point par jour")
-        void currentlyBehavesLikeANormalItemBeforeSellByDate() {
-            assertItem(afterOneDay(CONJURED_ITEM, 3, 6), 2, 5);
+        @DisplayName("perd 2 points de qualité par jour avant la date de péremption")
+        void losesTwoQualityPerDayBeforeSellByDate() {
+            assertItem(afterOneDay(CONJURED_ITEM, 3, 6), 2, 4);
         }
 
         @Test
-        @DisplayName("se comporte aujourd'hui comme un article ordinaire : -2 points une fois périmé")
-        void currentlyBehavesLikeANormalItemAfterSellByDate() {
-            assertItem(afterOneDay(CONJURED_ITEM, 0, 6), -1, 4);
+        @DisplayName("perd encore seulement 2 points de qualité le dernier jour de vente")
+        void losesTwoQualityOnTheLastSellableDay() {
+            assertItem(afterOneDay(CONJURED_ITEM, 1, 10), 0, 8);
+        }
+
+        @Test
+        @DisplayName("perd 4 points de qualité le jour où la date de péremption est dépassée")
+        void losesFourQualityOnTheDayTheSellByDatePasses() {
+            assertItem(afterOneDay(CONJURED_ITEM, 0, 10), -1, 6);
+        }
+
+        @Test
+        @DisplayName("perd 4 points de qualité par jour une fois périmé")
+        void losesFourQualityPerDayAfterSellByDate() {
+            assertItem(afterOneDay(CONJURED_ITEM, -1, 10), -2, 6);
+        }
+
+        @Test
+        @DisplayName("ne descend jamais en dessous de 0")
+        void qualityNeverGoesBelowZero() {
+            assertItem(afterOneDay(CONJURED_ITEM, 5, 1), 4, 0);
+        }
+
+        @Test
+        @DisplayName("s'arrête à 0 au lieu de devenir négatif quand il est périmé")
+        void qualityStopsAtZeroInsteadOfGoingNegativeWhenExpired() {
+            assertItem(afterOneDay(CONJURED_ITEM, 0, 3), -1, 0);
+        }
+
+        @Test
+        @DisplayName("la règle vaut pour tout article dont le nom commence par Conjured")
+        void ruleAppliesToEveryItemWhoseNameStartsWithConjured() {
+            assertItem(afterOneDay(ANOTHER_CONJURED_ITEM, 5, 10), 4, 8);
         }
     }
 
