@@ -12,16 +12,16 @@ class BackstagePassUpdater implements ItemUpdater {
 
     @Override
     public void update(Item item) {
-        Items.increaseQuality(item);
+        ItemQuality.increase(item);
         if (item.sellIn <= DOUBLE_GAIN_SELL_IN) {
-            Items.increaseQuality(item);
+            ItemQuality.increase(item);
         }
         if (item.sellIn <= TRIPLE_GAIN_SELL_IN) {
-            Items.increaseQuality(item);
+            ItemQuality.increase(item);
         }
         item.sellIn--;
-        if (Items.isExpired(item)) {
-            item.quality = Items.MIN_QUALITY;
+        if (isExpired(item)) {
+            item.quality = ItemQuality.MIN;
         }
     }
 }

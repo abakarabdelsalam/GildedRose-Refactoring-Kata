@@ -9,14 +9,14 @@ class ConjuredItemUpdater implements ItemUpdater {
     public void update(Item item) {
         degradeQuality(item);
         item.sellIn--;
-        if (Items.isExpired(item)) {
+        if (isExpired(item)) {
             degradeQuality(item);
         }
     }
 
     private static void degradeQuality(Item item) {
         for (int step = 0; step < DEGRADATION_RATE; step++) {
-            Items.decreaseQuality(item);
+            ItemQuality.decrease(item);
         }
     }
 }

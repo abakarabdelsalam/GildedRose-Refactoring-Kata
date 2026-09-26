@@ -5,10 +5,10 @@ class AgedBrieUpdater implements ItemUpdater {
 
     @Override
     public void update(Item item) {
-        Items.increaseQuality(item);
+        ItemQuality.increase(item);
         item.sellIn--;
-        if (Items.isExpired(item)) {
-            Items.increaseQuality(item);
+        if (isExpired(item)) {
+            ItemQuality.increase(item);
         }
     }
 }
