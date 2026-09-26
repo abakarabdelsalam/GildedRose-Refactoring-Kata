@@ -1,3 +1,5 @@
+> **Solution Java de ce kata : voir le dossier [`Java/`](Java/)** — démarche et choix expliqués dans [`Java/REFACTORING.md`](Java/REFACTORING.md).
+
 _Support this and all my katas via [Patreon](https://www.patreon.com/EmilyBache)_
 
 # Gilded Rose Refactoring Kata
